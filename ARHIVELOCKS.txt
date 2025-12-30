@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TERMINAL_GATEWAY_V3</title>
+    <style>
+        body { background-color: black; color: #00FF00; font-family: 'Courier New', Courier, monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        #console { width: 80%; max-width: 600px; border: 1px solid #00FF00; padding: 20px; box-shadow: 0 0 15px #00FF00; }
+        input { background: transparent; border: none; color: #00FF00; border-bottom: 1px solid #00FF00; width: 100%; outline: none; font-size: 1.2rem; }
+        .error { color: red; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div id="console">
+    <div id="output">
+        [SYSTEM] THE LEFT ARCHIVE GATEWAY<br>
+        [SYSTEM] CREATOR: M. JARDIVIST<br>
+        [WARNING] 3 ATTEMPTS REMAINING. FAILURE WILL RESULT IN IP BLACKLIST.<br><br>
+        ENTER ACCESS KEY:
+    </div>
+    <input type="password" id="keyInput" autofocus>
+</div>
+
+<script>
+    const input = document.getElementById('keyInput');
+    const output = document.getElementById('output');
+    
+    // Check if they are already blacklisted
+    if (localStorage.getItem('blacklisted') === 'true') {
+        renderLockout();
+    }
+
+    let attempts = localStorage.getItem('attempts') || 0;
+
+    input.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            const val = input.value;
+            input.value = '';
+
+            if (val === "RIGHT_PASSWORD_HERE") {
+                output.innerHTML += "<br>[SUCCESS] ACCESS GRANTED. REDIRECTING...";
+                setTimeout(() => {
+                    window.location.href = "YOUR_GOOGLE_DRIVE_LINK_HERE";
+                }, 2000);
+            } 
+            else if (val === "WRONG_DECOY_PASSWORD") {
+                output.innerHTML += "<br>[SUCCESS] ACCESS GRANTED. LOADING...";
+                setTimeout(() => {
+                    window.location.href = "https://www.google.com/search?q=you+were+never+meant+to+find+this"; // Or a scary site
+                }, 2000);
+            }
+            else {
+                attempts++;
+                localStorage.setItem('attempts', attempts);
+                
+                if (attempts >= 3) {
+                    localStorage.setItem('blacklisted', 'true');
+                    renderLockout();
+                } else {
+                    output.innerHTML += `<br><span class="error">[ERROR] INVALID KEY. ${3 - attempts} ATTEMPTS REMAIN.</span>`;
+                }
+            }
+        }
+    });
+
+    function renderLockout() {
+        document.getElementById('console').innerHTML = "<span class='error'>[FATAL ERROR] THIS DEVICE HAS BEEN BLACKLISTED BY M_JARDIVIST. <br><br> YOU WERE TOO LATE.</span>";
+        input.classList.add('hidden');
+    }
+</script>
+</body>
+</html>
